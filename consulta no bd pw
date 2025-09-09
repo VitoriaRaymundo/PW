@@ -1,0 +1,176 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+<body>
+ 
+<?php
+$cpf=               $_POST["cpf"];
+$nome=              $_POST["nome"];
+$fone=              $_POST["fone"];
+$data_consulta=     $_POST["data_consulta"];
+$receita=           $_POST["receita"];
+$quadro_clinico=    $_POST["quadro_clinico"];
+ 
+$bd = mysqli_connect("localhost","root","","clinica") OR DIE ("Erro ao conectar!");
+//conecta com o servidor mysql
+ 
+$es=mysqli_query($bd,"update pacientes set nome='$nome',
+                                        fone='$fone',
+                                        data_consulta='$data_consulta',
+                                        receita='$receita',
+                                        quadro_clinico='$quadro_clinico'
+                                        where cpf='$cpf'");
+if ($es==1)
+{
+    echo "cpf: $cpf<br>
+          nome: $nome<br>
+          fone: $fone<br>
+          data_consulta: $data_consulta<br>
+          receita: $receita<br>
+          quadro_clinico: $quadro_clinico<br>
+          <hr>";
+    echo "Obrigado por participar - Registro Alterado. <br><br>  ";
+}
+else
+{
+    echo "ERRO - Registro não Alterado. <br><br> ";
+}
+    echo "<a href=consultar.html>Voltar para nova Consulta";
+?>
+</body>
+</html>
+ 
+<HTML>
+<BODY>
+<?php
+$expressao=     $_POST["expressao"];
+$bd=mysqli_connect("localhost","root","","clinica") or die ("erro!");
+ 
+ 
+if (isset($_POST ["op"]))                                                                                                                                                    
+{
+    $op = $_POST ["op"];
+    if ($op=="nome")
+        $consulta=mysqli_query($bd,"select * from pacientes where nome='$expressao'");
+    if ($op=="cpf")
+        $consulta=mysqli_query($bd,"select * from pacientes where cpf='$expressao'");
+    if ($op=="quadro_clinico")
+        $consulta=mysqli_query($bd,"select * from pacientes where quadro_clinico like '%$expressao%'");
+   
+} else
+{
+    echo "volte a página e escolha o campo que fará a pesquisa";
+    exit;
+}
+$reg = mysqli_fetch_array($consulta);
+if ($reg==0)
+{
+    echo "Não existem registros para a pesquisa!";
+    exit;
+}
+while ($reg!=0)
+{
+    $cpf = $reg["cpf"];
+    $nome = $reg["nome"];
+    $fone = $reg["fone"];
+    $data_consulta = $reg["data_consulta"];
+    $receita = $reg["receita"];
+    $quadro_clinico = $reg["quadro_clinico"];
+ 
+   
+   
+    echo   "cpf: $cpf<br>
+            nome: $nome<br>
+            fone: $fone<br>
+            data_consulta: $data_consulta<br>
+            receita: $receita<br>
+            quadro_clinico: $quadro_clinico<br>";
+           
+    ?>
+    <a href="excluir.php?cpfOG=<?php echo $cpf;?>" onclick = "return confirm ('Exclui o registro?');">Excluir</a>
+   
+    <a href="alterar.php? cpfOG=<?php echo $cpf;?>">Alterar</a><hr>
+    <?php
+    $reg = mysqli_fetch_array($consulta);      
+}
+?>
+<br><a href="rodar.html">Voltar</a><br>
+</body>
+</html>
+ 
+<HTML>
+<HEAD>
+ <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <TITLE>Alteração</TITLE>
+</HEAD>
+<?php
+ 
+$cpf=trim($_GET["cpfOG"]);
+ 
+$bd=mysqli_connect("localhost","root","","clinica") or die ("erro!");
+ 
+ 
+$sql="select * from pacientes where cpf = '$cpf'"; //consulta sql
+ 
+$consulta=mysqli_query($bd, $sql); //faz a consulta de todos os registros
+$reg=mysqli_fetch_array($consulta); // cria uma matriz com todos os campos e registros
+ 
+if ($reg==0)
+{
+     echo "ERRO - Registro não Existe.  ";
+     exit;
+}
+else
+{
+    $cpf = $reg["cpf"];
+    $nome = $reg["nome"];
+    $fone = $reg["fone"];
+    $data_consulta = $reg["data_consulta"];
+    $receita = $reg["receita"];
+    $quadro_clinico = $reg["quadro_clinico"];
+}
+?>
+<center><h2>Alterar Registros</center>
+    <?php echo "cpf: $cpf<br><br>" ?>
+    <form method="POST" action="regrava.php">
+        <p>                 <input type="hidden" size="10" cpf="cpf"            value ='<?php echo "$cpf"; ?>'>
+        <p>nome:            <input type="text" size="40"   name="nome"      value ='<?php echo "$nome"; ?>'></p>
+        <p>fone:            <input type="text" size="50"   name="fone"      value ='<?php echo "$fone"; ?>'></p>
+        <p>data_consulta:   <input type="text" size="20"   name="data_consulta"             value ='<?php echo "$data_consulta"; ?>'></p>
+        <p>receita:         <input type="text" size="20"   name="receita"           value ='<?php echo "$receita"; ?>'></p>
+        <p>quadro_clinico   :<input type="text" size="20"   name="quadro_clinico" value ='<?php echo "$quadro_clinico"; ?>'></p>
+       
+        <input type="submit" name="B1" value="Alterar"></p>
+    </form>
+   
+</body>
+</html>
+ 
+ 
+<HTML>
+    <HEAD>
+     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+     <TITLE>Consulta</TITLE>
+    </HEAD>
+    <BODY>
+    <font face="book antiqua" size="8"><center>Consulta de Registros</center></font><br>
+     
+    <form method="post" action="consultar.php">
+    Digite a expressão: <input type="text" name = "expressao"><br><br>
+     
+    Escolha a opção:
+    <input type="radio" name="op" value ="nome" checked>nome
+    <input type="radio" name="op" value ="cpf">cpf
+    <input type="radio" name="op" value ="quadro_clinico">quadro clínico
+   
+     
+    <input type="submit" value ="Consultar">
+    </form>
+    </BODY>
+    </HTML>
+ 
+create database clinica;
+use clinica;
+create table pacientes (cpf varchar(11) primary key, nome varchar(50), fone varchar(15), data_consulta date, receita varchar(200), quadro_clinico varchar(400));
+ 

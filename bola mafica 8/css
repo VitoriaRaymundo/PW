@@ -1,0 +1,18 @@
+html {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+body {
+    background: linear-gradient(#7429ff, #fff) ;
+    width: 100vh;
+    height: 100vh;
+    overflow-x: hidden;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+
